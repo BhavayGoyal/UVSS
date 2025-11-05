@@ -496,6 +496,24 @@ def write_custom_config(config_path, config_values, log_area, current_log):
         st.error(f"ERROR: Could not write config file {config_path}. {e}")
         return False, current_log
 
+# --- Runtime library fix for Streamlit Cloud ---
+def ensure_libjpeg_symlink():
+    """
+    Ensures libjpeg.so.8 exists (symlinked to libjpeg.so.62) to fix
+    'error while loading shared libraries: libjpeg.so.8' on Debian 12.
+    """
+    lib_dir = "/usr/lib/x86_64-linux-gnu"
+    jpeg62 = os.path.join(lib_dir, "libjpeg.so.62")
+    jpeg8 = os.path.join(lib_dir, "libjpeg.so.8")
+    try:
+        if not os.path.exists(jpeg8) and os.path.exists(jpeg62):
+            os.symlink(jpeg62, jpeg8)
+            print("✅ Created symlink: libjpeg.so.8 → libjpeg.so.62")
+        else:
+            print("ℹ️ libjpeg.so.8 already exists or libjpeg.so.62 not found.")
+    except Exception as e:
+        print("⚠️ Could not create libjpeg.so.8 symlink:", e)
+
 def run_stitching(stitched_images_dir, executable_path, log_area, current_log):
     """
     Finds all .jpg files in the directory and runs the stitching executable.
@@ -513,6 +531,8 @@ def run_stitching(stitched_images_dir, executable_path, log_area, current_log):
     if not images_to_stitch:
         st.warning(f"Warning: No .jpg images found in {stitched_images_dir} to stitch.")
         return True, current_log
+    
+    ensure_libjpeg_symlink()
 
     cmd = [executable_path] + [str(p) for p in images_to_stitch]
     current_log = log_message(log_area, current_log, f"Running command: {' '.join(cmd[:4])}... ({len(cmd)-1} files total)\n")
