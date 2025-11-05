@@ -1,5 +1,2 @@
+libgl1
 ffmpeg
-libsm6
-libxext6
-python3-opencv
-libjpeg8
