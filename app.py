@@ -519,6 +519,7 @@ def run_stitching(stitched_images_dir, executable_path, log_area, current_log):
     Finds all .jpg files in the directory and runs the stitching executable.
     Streams the output in real-time to the Streamlit log area.
     """
+    ensure_libjpeg_symlink()
     current_log = log_message(log_area, current_log, f"--- 3. Starting Image Stitching ---")
     
     output_path = Path(stitched_images_dir)
@@ -531,8 +532,6 @@ def run_stitching(stitched_images_dir, executable_path, log_area, current_log):
     if not images_to_stitch:
         st.warning(f"Warning: No .jpg images found in {stitched_images_dir} to stitch.")
         return True, current_log
-    
-    ensure_libjpeg_symlink()
 
     cmd = [executable_path] + [str(p) for p in images_to_stitch]
     current_log = log_message(log_area, current_log, f"Running command: {' '.join(cmd[:4])}... ({len(cmd)-1} files total)\n")
