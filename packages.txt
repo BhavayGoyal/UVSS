@@ -1,1 +1,5 @@
 libgl1
+libopencv-dev
+ffmpeg
+libsm6
+libxext6
