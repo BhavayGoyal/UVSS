@@ -1,8 +1,5 @@
 ffmpeg
 libsm6
 libxext6
-libopencv-core406
-libopencv-imgproc406
-libopencv-imgcodecs406
-libopencv-highgui406
-libopencv-stitching406
+python3-opencv
+libjpeg8
